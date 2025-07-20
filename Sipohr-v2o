@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sipohr — Мудрость мира</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --text: #eee;
+      --accent: #f5d742;
+      --box: #111;
+    }
+    body.light {
+      --bg: #f3f3f3;
+      --text: #111;
+      --accent: #ffbb00;
+      --box: #fff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    header {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent);
+    }
+
+    main {
+      background: var(--box);
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 0 20px var(--accent);
+      text-align: center;
+    }
+
+    .quote-text {
+      font-size: 1.6rem;
+      font-style: italic;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .quote-author {
+      font-weight: bold;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    button, select {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button {
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    button:hover {
+      background: #e0c134;
+      box-shadow: 0 0 20px #e0c134;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #888;
+      text-align: center;
+    }
+
+    .settings-panel {
+      background: var(--box);
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px var(--accent);
+      display: none;
+    }
+
+    .settings-panel.show {
+      display: block;
+    }
+
+    .label {
+      margin-top: 10px;
+      display: block;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .quote-text {
+        font-size: 1.2rem;
+      }
+      header {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>Sipohr — Мудрость мира</header>
+
+  <main>
+    <div class="controls">
+      <label for="language">Язык: </label>
+      <select id="language">
+        <option value="ru" selected>Русский</option>
+        <option value="en">English</option>
+        <option value="tj">Тоҷикӣ</option>
+      </select>
+      <button onclick="toggleTheme()">🌗 Тема</button>
+      <button onclick="toggleSettings()">⚙️ Настройки</button>
+    </div>
+
+    <div class="quote-text" id="quoteText">Загрузка...</div>
+    <div class="quote-author" id="quoteAuthor"></div>
+    <button onclick="nextQuote()">Следующая цитата</button>
+
+    <div class="settings-panel" id="settingsPanel">
+      <span class="label">Будущее сюда: выбор шрифта, категории и прочее 🔧</span>
+      <p>Пока эта панель просто пример — позже добавим кастомизацию!</p>
+    </div>
+  </main>
+
+  <footer>© 2025 Sipohr | by Azam Ashrapov</footer>
+
+  <script>
+    const quotes = [
+      {
+        ru: { text: "Жизнь — это 10% того, что с тобой происходит, и 90% того, как ты на это реагируешь.", author: "Чарльз Суинделл" },
+        en: { text: "Life is 10% what happens to you and 90% how you react to it.", author: "Charles Swindoll" },
+        tj: { text: "Зиндагӣ 10% рӯйдод ва 90% муносибати ту ба он аст.", author: "Чарлз Свинделл" }
+      },
+      {
+        ru: { text: "Делай или не делай. Нет попытки.", author: "Йода" },
+        en: { text: "Do or do not. There is no try.", author: "Yoda" },
+        tj: { text: "Кун ё накун. Кӯшиш вуҷуд надорад.", author: "Йода" }
+      },
+      {
+        ru: { text: "Лучше зажечь одну свечу, чем проклинать темноту.", author: "Конфуций" },
+        en: { text: "It is better to light one small candle than to curse the darkness.", author: "Confucius" },
+        tj: { text: "Беҳтар аст як шамъ фурӯзон кунӣ, на он ки торикиро маломат кунӣ.", author: "Конфутсий" }
+      },
+      {
+        ru: { text: "Сила не в мускулах, а в духе.", author: "Махатма Ганди" },
+        en: { text: "Strength does not come from physical capacity. It comes from an indomitable will.", author: "Mahatma Gandhi" },
+        tj: { text: "Қувват аз мушак нест, аз иродаи шикастнопазир аст.", author: "Махатма Ганди" }
+      },
+      {
+        ru: { text: "Стань изменением, которое ты хочешь видеть в мире.", author: "Махатма Ганди" },
+        en: { text: "Be the change that you wish to see in the world.", author: "Mahatma Gandhi" },
+        tj: { text: "Онгуне бош, ки мехоҳӣ ҷаҳон шавад.", author: "Махатма Ганди" }
+      },
+      {
+        ru: { text: "Мужество — это знать, чего бояться, и всё же идти.", author: "Платон" },
+        en: { text: "Courage is knowing what not to fear.", author: "Plato" },
+        tj: { text: "Ҷасорат — донистани он чизест, ки набояд тарсид.", author: "Платон" }
+      },
+      {
+        ru: { text: "Мы становимся тем, о чём мы думаем.", author: "Эрл Найтингейл" },
+        en: { text: "We become what we think about.", author: "Earl Nightingale" },
+        tj: { text: "Мо он мешавем, ки дар бораи он фикр мекунем.", author: "Эрл Найтингейл" }
+      },
+      {
+        ru: { text: "Знание — сила.", author: "Фрэнсис Бэкон" },
+        en: { text: "Knowledge is power.", author: "Francis Bacon" },
+        tj: { text: "Дониш — қудрат аст.", author: "Фрэнсис Бэкон" }
+      }
+    ];
+
+    let currentIndex = 0;
+    const quoteText = document.getElementById('quoteText');
+    const quoteAuthor = document.getElementById('quoteAuthor');
+    const languageSelect = document.getElementById('language');
+    const settingsPanel = document.getElementById('settingsPanel');
+
+    function displayQuote(index, lang) {
+      const quote = quotes[index][lang];
+      quoteText.textContent = `"${quote.text}"`;
+      quoteAuthor.textContent = `— ${quote.author}`;
+    }
+
+    function nextQuote() {
+      currentIndex = (currentIndex + 1) % quotes.length;
+      displayQuote(currentIndex, languageSelect.value);
+    }
+
+    function toggleSettings() {
+      settingsPanel.classList.toggle("show");
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light");
+      localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+    }
+
+    languageSelect.addEventListener('change', () => {
+      displayQuote(currentIndex, languageSelect.value);
+    });
+
+    // Init
+    window.onload = () => {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") document.body.classList.add("light");
+      displayQuote(currentIndex, languageSelect.value);
+    };
+  </script>
+</body>
+</html>
